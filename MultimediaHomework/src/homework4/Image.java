@@ -243,79 +243,110 @@ public class Image {
 			System.exit(1);
 		}
 
-		Image[] blocksofTarget = new Image[432];
-		Image blockofTarget;
 		switch (n) {
 		case 24:
-			int[] rgbTarget = new int[3];
+			int[] rgb = new int[3];
 			//
+			// Dividing a target image into blocks of 24x24
 			//
-			// Dividing a target image and reference image into blocks of 24x24
-			//
-			//
-			int count = 0;
-			for (int i = 0; i < target.getW(); i = i + 24) {
-				for (int j = 0; j < target.getH(); j = j + 24) {
-					blockofTarget = new Image(24, 24);
+			int[][][][][] blockMatrixT = new int[8][6][24][24][4];
+			for (int i = 0, mi = 0; i < target.getW() || mi < 8; i = i + 24, mi++) {
+				for (int j = 0, mj = 0; j < target.getH() || mj < 6; j = j + 24, mj++) {
 					for (int counti = i, blocki = 0; counti < i + 24 || blocki < 24; counti++, blocki++) {
 						for (int countj = j, blockj = 0; countj < j + 24 || blockj < 24; countj++, blockj++) {
-							target.getPixel(counti, countj, rgbTarget);
-							blockofTarget.setPixel(blocki, blockj, rgbTarget);
+							target.getPixel(counti, countj, rgb);
+							int gray = (int) (Math.round(0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]));
+							blockMatrixT[mi][mj][blocki][blockj][0] = rgb[0];
+							blockMatrixT[mi][mj][blocki][blockj][1] = rgb[1];
+							blockMatrixT[mi][mj][blocki][blockj][2] = rgb[2];
+							blockMatrixT[mi][mj][blocki][blockj][3] = gray;
 						}
 					}
-					blockofTarget.display();
-					blocksofTarget[count++] = blockofTarget;
 				}
 			}
-			//
-			// End
-			//
 
-			/*switch (p) {
+			int[][][][][] blockMatrixR = new int[8][6][24][24][4];
+			for (int i = 0, mi = 0; i < target.getW() || mi < 8; i = i + 24, mi++) {
+				for (int j = 0, mj = 0; j < target.getH() || mj < 6; j = j + 24, mj++) {
+					for (int counti = i, blocki = 0; counti < i + 24 || blocki < 24; counti++, blocki++) {
+						for (int countj = j, blockj = 0; countj < j + 24 || blockj < 24; countj++, blockj++) {
+							target.getPixel(counti, countj, rgb);
+							int gray = (int) (Math.round(0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]));
+							blockMatrixR[mi][mj][blocki][blockj][0] = rgb[0];
+							blockMatrixR[mi][mj][blocki][blockj][1] = rgb[1];
+							blockMatrixR[mi][mj][blocki][blockj][2] = rgb[2];
+							blockMatrixR[mi][mj][blocki][blockj][3] = gray;
+						}
+					}
+				}
+			}
+
+			switch (p) {
 			case 4:
-				int[] rgbref = new int[3];
-				int[] rgbtarget = new int[3];
-				double mad = 0, mad1 = 0;
-				int[][][] MotionVector=new int[8][6][2];
-				int count1 = 0;
-				
-				double grayref = 0, graytarget = 0;
-				for (int i = 0; i < target.getW(); i = i + 24) {
-					for (int j = 0; j < target.getH(); j = j + 24) {
-						for (int refi = i - p; refi < i + 24 + p; refi++) {
-							for (int refj = j - p; refj < j + 24 + p; refj++) {
-								for (int blocki = refi, targeti = 0; blocki < refi + 24|| targeti < 24; blocki++, targeti++) {
-									for (int blockj = refj, targetj = 0; blockj < refj + 24|| targetj < 24; blockj++, targetj++) {
-										reference.getPixel(blocki, blockj, rgbref);
-										grayref = Math.round(0.299 * rgbref[0] + 0.587 * rgbref[1] + 0.114 * rgbref[2]);
-										blocksofTarget[count1++].getPixel(targeti, targetj, rgbtarget);
-										graytarget = Math.round(
-												0.299 * rgbtarget[0] + 0.587 * rgbtarget[1] + 0.114 * rgbtarget[2]);
-										mad = mad + ((graytarget - grayref) / 576);
+				int sum_sq = 0;
+				double[][] msd = new double[4][4];
+				double minValue;
+				int matchi = 0, matchj = 0;
+				int matchtargeti,matchtargetj;
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:"+target.fileName);
+					writer.println("Reference image name:"+reference.fileName);
+					writer.println("Number of target macro blocks: 8 x 6 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti < 8; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 6; matchtargetj++) {
+							for (int mi = 0; mi < 4; mi++) {
+								for (int mj = 0; mj < 4; mj++) {
+									for (int blocki = 0; blocki < 24; blocki++) {
+										for (int blockj = 0; blockj < 24; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
 									}
-								}
-								if (mad1 < mad) {
-									mad = mad1;
-									MotionVector[i][j][0]=i-refi;
-									MotionVector[i][j][1]=j-refj;
+									msd[mi][mj] = (double) sum_sq / (24 * 24);
 								}
 							}
+
+							minValue = msd[0][0];
+
+							for (int mi = 0; mi < 4; mi++) {
+								for (int mj = 0; mj < 4; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+
 						}
+						writer.println("\n");
 					}
+
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
 				}
 				
-				for(int i=0;i<8;i++) {
-					for(int j=0;j<6;j++) {
-						for(int k=0;k<2;k++) {
-							System.out.println(MotionVector[i][j][k]);
-						}
-					}
-				}
+				
 
-			}*/
+				break;
+			}
 
+			break;
 		}
 
+		// end
 		return null;
 	}
 
