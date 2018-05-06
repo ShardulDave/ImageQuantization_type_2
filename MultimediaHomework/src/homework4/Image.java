@@ -1,4 +1,4 @@
-package homework4;
+
 /*******************************************************
 
  CS4551 Multimedia Software Systems
@@ -228,8 +228,10 @@ public class Image {
 	// Task 1-Block based Motion Compensation
 	//
 	//
+	//Output is a mv.txt file
 	//
-	public static Image[] routine(Image reference, Image target, int n, int p) {
+	//
+	public static void routine(Image reference, Image target, int n, int p) {
 
 		if (!(n == 8 || n == 16 || n == 24)) {
 			System.out.println("Value of block size can be 8,16 or 24");
@@ -249,6 +251,8 @@ public class Image {
 			//
 			// Dividing a target image into blocks of 24x24
 			//
+			//
+			int[][][][][] blockMatrixE = new int[8][6][24][24][4];
 			int[][][][][] blockMatrixT = new int[8][6][24][24][4];
 			for (int i = 0, mi = 0; i < target.getW() || mi < 8; i = i + 24, mi++) {
 				for (int j = 0, mj = 0; j < target.getH() || mj < 6; j = j + 24, mj++) {
@@ -283,16 +287,17 @@ public class Image {
 
 			switch (p) {
 			case 4:
+
 				int sum_sq = 0;
 				double[][] msd = new double[4][4];
 				double minValue;
 				int matchi = 0, matchj = 0;
-				int matchtargeti,matchtargetj;
+				int matchtargeti, matchtargetj;
 				try {
 					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
 					writer.println("Name: Shardul Dave");
-					writer.println("Target image name:"+target.fileName);
-					writer.println("Reference image name:"+reference.fileName);
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
 					writer.println("Number of target macro blocks: 8 x 6 (image size is 192 x 144");
 					writer.println("\n");
 
@@ -311,9 +316,7 @@ public class Image {
 									msd[mi][mj] = (double) sum_sq / (24 * 24);
 								}
 							}
-
 							minValue = msd[0][0];
-
 							for (int mi = 0; mi < 4; mi++) {
 								for (int mj = 0; mj < 4; mj++) {
 									if (msd[mi][mj] <= minValue) {
@@ -323,31 +326,682 @@ public class Image {
 									}
 								}
 							}
-
 							int motionVectori = matchtargeti - matchi;
 							int motionVectorj = matchtargetj - matchj;
-
 							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
-
 						}
 						writer.println("\n");
 					}
-
 					writer.close();
 				} catch (Exception e) {
 					e.getMessage();
 				}
-				
-				
-
 				break;
+				//end of case 4 in 24
+			case 8:
+
+				sum_sq = 0;
+				msd = new double[8][8];
+
+				matchi = 0;
+				matchj = 0;
+
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 8 x 6 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti < 8; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 6; matchtargetj++) {
+							for (int mi = 0; mi < 8; mi++) {
+								for (int mj = 0; mj < 8; mj++) {
+									for (int blocki = 0; blocki < 24; blocki++) {
+										for (int blockj = 0; blockj < 24; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (24 * 24);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 8; mi++) {
+								for (int mj = 0; mj < 8; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				// end of case 8 in 24
+			case 12:
+
+				sum_sq = 0;
+				msd = new double[12][12];
+
+				matchi = 0;
+				matchj = 0;
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 8 x 6 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti < 8; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 6; matchtargetj++) {
+							for (int mi = 0; mi < 12; mi++) {
+								for (int mj = 0; mj < 12; mj++) {
+									for (int blocki = 0; blocki < 24; blocki++) {
+										for (int blockj = 0; blockj < 24; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (24 * 24);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 12; mi++) {
+								for (int mj = 0; mj < 12; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				//end of case 12 in24
+			case 16:
+
+				sum_sq = 0;
+				msd = new double[16][16];
+
+				matchi = 0;
+				matchj = 0;
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 8 x 6 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti < 8; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 6; matchtargetj++) {
+							for (int mi = 0; mi < 16; mi++) {
+								for (int mj = 0; mj < 16; mj++) {
+									for (int blocki = 0; blocki < 24; blocki++) {
+										for (int blockj = 0; blockj < 24; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (24 * 24);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 16; mi++) {
+								for (int mj = 0; mj < 16; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				//end of case 16 in 24
+			}
+			break;
+
+		case 8:
+			rgb = new int[3];
+			//
+			// Dividing a target image into blocks of 8X8
+			//
+			//
+			blockMatrixE = new int[24][18][8][8][4];
+			blockMatrixT = new int[24][18][8][8][4];
+			for (int i = 0, mi = 0; i < target.getW() || mi < 24; i = i + 8, mi++) {
+				for (int j = 0, mj = 0; j < target.getH() || mj < 18; j = j + 8, mj++) {
+					for (int counti = i, blocki = 0; counti < i + 8|| blocki < 8; counti++, blocki++) {
+						for (int countj = j, blockj = 0; countj < j + 8 || blockj < 8; countj++, blockj++) {
+							target.getPixel(counti, countj, rgb);
+							int gray = (int) (Math.round(0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]));
+							blockMatrixT[mi][mj][blocki][blockj][0] = rgb[0];
+							blockMatrixT[mi][mj][blocki][blockj][1] = rgb[1];
+							blockMatrixT[mi][mj][blocki][blockj][2] = rgb[2];
+							blockMatrixT[mi][mj][blocki][blockj][3] = gray;
+						}
+					}
+				}
 			}
 
+			blockMatrixR = new int[24][18][8][8][4];
+			for (int i = 0, mi = 0; i < target.getW() || mi < 24; i = i + 8, mi++) {
+				for (int j = 0, mj = 0; j < target.getH() || mj <18 ; j = j + 8, mj++) {
+					for (int counti = i, blocki = 0; counti < i + 8 || blocki < 8; counti++, blocki++) {
+						for (int countj = j, blockj = 0; countj < j + 8 || blockj < 8; countj++, blockj++) {
+							target.getPixel(counti, countj, rgb);
+							int gray = (int) (Math.round(0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]));
+							blockMatrixR[mi][mj][blocki][blockj][0] = rgb[0];
+							blockMatrixR[mi][mj][blocki][blockj][1] = rgb[1];
+							blockMatrixR[mi][mj][blocki][blockj][2] = rgb[2];
+							blockMatrixR[mi][mj][blocki][blockj][3] = gray;
+						}
+					}
+				}
+			}
+
+			switch (p) {
+			case 4:
+
+				int sum_sq = 0;
+				double[][] msd = new double[4][4];
+				double minValue;
+				int matchi = 0, matchj = 0;
+				int matchtargeti, matchtargetj;
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 24 x 18 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti < 24; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 18; matchtargetj++) {
+							for (int mi = 0; mi < 4; mi++) {
+								for (int mj = 0; mj < 4; mj++) {
+									for (int blocki = 0; blocki < 8; blocki++) {
+										for (int blockj = 0; blockj < 8; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (8 * 8);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 4; mi++) {
+								for (int mj = 0; mj < 4; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				//end of case 4 in 8
+			case 8:
+
+				sum_sq = 0;
+				msd = new double[8][8];
+				matchi = 0;
+				matchj = 0;
+
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 24x 18 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti < 24; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 18; matchtargetj++) {
+							for (int mi = 0; mi < 8; mi++) {
+								for (int mj = 0; mj < 8; mj++) {
+									for (int blocki = 0; blocki < 8; blocki++) {
+										for (int blockj = 0; blockj < 8; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (8 * 8);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 8; mi++) {
+								for (int mj = 0; mj < 8; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				//end of case 8 in 8
+			case 12:
+
+				sum_sq = 0;
+				msd = new double[12][12];
+				matchi = 0;
+				matchj = 0;
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 24 x 18 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti < 24; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 18; matchtargetj++) {
+							for (int mi = 0; mi < 12; mi++) {
+								for (int mj = 0; mj < 12; mj++) {
+									for (int blocki = 0; blocki < 8; blocki++) {
+										for (int blockj = 0; blockj < 8; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (8 * 8);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 12; mi++) {
+								for (int mj = 0; mj < 12; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				//end of 12 in 8
+			case 16:
+
+				sum_sq = 0;
+				msd = new double[16][16];
+				matchi = 0;
+				matchj = 0;
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 24 x 18 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti < 24; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 18; matchtargetj++) {
+							for (int mi = 0; mi < 16; mi++) {
+								for (int mj = 0; mj < 16; mj++) {
+									for (int blocki = 0; blocki < 8; blocki++) {
+										for (int blockj = 0; blockj < 8; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (8 * 8);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 16; mi++) {
+								for (int mj = 0; mj < 16; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				//end of 16 in 8
+			}
+			break;
+
+		case 16:
+			rgb = new int[3];
+			//
+			// Dividing a target image into blocks of 16X16
+			//
+			//
+			blockMatrixE = new int[12][9][16][16][4];
+			blockMatrixT = new int[12][9][16][16][4];
+			for (int i = 0, mi = 0; i < target.getW() || mi < 12; i = i + 16, mi++) {
+				for (int j = 0, mj = 0; j < target.getH() || mj < 9; j = j + 16, mj++) {
+					for (int counti = i, blocki = 0; counti < i + 16|| blocki < 16; counti++, blocki++) {
+						for (int countj = j, blockj = 0; countj < j + 16 || blockj < 16; countj++, blockj++) {
+							target.getPixel(counti, countj, rgb);
+							int gray = (int) (Math.round(0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]));
+							blockMatrixT[mi][mj][blocki][blockj][0] = rgb[0];
+							blockMatrixT[mi][mj][blocki][blockj][1] = rgb[1];
+							blockMatrixT[mi][mj][blocki][blockj][2] = rgb[2];
+							blockMatrixT[mi][mj][blocki][blockj][3] = gray;
+						}
+					}
+				}
+			}
+
+			blockMatrixR = new int[12][9][16][16][4];
+			for (int i = 0, mi = 0; i < target.getW() || mi < 12; i = i + 16, mi++) {
+				for (int j = 0, mj = 0; j < target.getH() || mj <9 ; j = j + 16, mj++) {
+					for (int counti = i, blocki = 0; counti < i + 16 || blocki < 16; counti++, blocki++) {
+						for (int countj = j, blockj = 0; countj < j + 16 || blockj < 16; countj++, blockj++) {
+							target.getPixel(counti, countj, rgb);
+							int gray = (int) (Math.round(0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]));
+							blockMatrixR[mi][mj][blocki][blockj][0] = rgb[0];
+							blockMatrixR[mi][mj][blocki][blockj][1] = rgb[1];
+							blockMatrixR[mi][mj][blocki][blockj][2] = rgb[2];
+							blockMatrixR[mi][mj][blocki][blockj][3] = gray;
+						}
+					}
+				}
+			}
+
+			switch(p) {
+			case 4:
+
+				int sum_sq = 0;
+				double[][] msd = new double[4][4];
+				double minValue;
+				int matchi = 0, matchj = 0;
+				int matchtargeti, matchtargetj;
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 12 x 9 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti <12; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 9; matchtargetj++) {
+							for (int mi = 0; mi < 4; mi++) {
+								for (int mj = 0; mj < 4; mj++) {
+									for (int blocki = 0; blocki < 16; blocki++) {
+										for (int blockj = 0; blockj < 16; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (16* 16);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 4; mi++) {
+								for (int mj = 0; mj < 4; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				//end of case 4 in 16
+			case 8:
+
+				sum_sq = 0;
+				msd = new double[8][8];
+				matchi = 0;
+				matchj = 0;
+
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 12 x 9 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti <12; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 9; matchtargetj++) {
+							for (int mi = 0; mi < 8; mi++) {
+								for (int mj = 0; mj < 8; mj++) {
+									for (int blocki = 0; blocki < 16; blocki++) {
+										for (int blockj = 0; blockj < 16; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (16* 16);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 8; mi++) {
+								for (int mj = 0; mj < 8; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				//end of 8 in 16
+			case 12:
+
+				sum_sq = 0;
+				msd = new double[12][12];
+				matchi = 0;
+				matchj = 0;
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 12 x 9 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti <12; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 9; matchtargetj++) {
+							for (int mi = 0; mi < 12; mi++) {
+								for (int mj = 0; mj < 12; mj++) {
+									for (int blocki = 0; blocki < 16; blocki++) {
+										for (int blockj = 0; blockj < 16; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (16* 16);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 12; mi++) {
+								for (int mj = 0; mj < 12; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				//end of case 12 in 16
+			case 16:
+
+				sum_sq = 0;
+				msd = new double[16][16];
+				matchi = 0;
+				matchj = 0;
+				try {
+					PrintWriter writer = new PrintWriter("mv.txt", "UTF-8");
+					writer.println("Name: Shardul Dave");
+					writer.println("Target image name:" + target.fileName);
+					writer.println("Reference image name:" + reference.fileName);
+					writer.println("Number of target macro blocks: 12 x 9 (image size is 192 x 144");
+					writer.println("\n");
+
+					for (matchtargeti = 0; matchtargeti <12; matchtargeti++) {
+						for (matchtargetj = 0; matchtargetj < 9; matchtargetj++) {
+							for (int mi = 0; mi < 16; mi++) {
+								for (int mj = 0; mj < 16; mj++) {
+									for (int blocki = 0; blocki < 16; blocki++) {
+										for (int blockj = 0; blockj < 16; blockj++) {
+											int refPixel = blockMatrixR[mi][mj][blocki][blockj][3];
+											int targetPixel = blockMatrixT[mi][mj][blocki][blockj][3];
+											int err = targetPixel - refPixel;
+											sum_sq = (err * err);
+										}
+									}
+									msd[mi][mj] = (double) sum_sq / (16* 16);
+								}
+							}
+							minValue = msd[0][0];
+							for (int mi = 0; mi < 16; mi++) {
+								for (int mj = 0; mj < 16; mj++) {
+									if (msd[mi][mj] <= minValue) {
+										minValue = msd[mi][mj];
+										matchi = mi;
+										matchj = mj;
+									}
+								}
+							}
+							int motionVectori = matchtargeti - matchi;
+							int motionVectorj = matchtargetj - matchj;
+							writer.print("[" + motionVectori + "," + motionVectorj + "] ");
+						}
+						writer.println("\n");
+					}
+					writer.close();
+				} catch (Exception e) {
+					e.getMessage();
+				}
+				break;
+				//end of 16 in 16
+			}
+			break;
+		default:
+			System.out.println("None of the above");
 			break;
 		}
 
 		// end
-		return null;
+
 	}
 
 } // Image class
