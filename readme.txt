@@ -1,6 +1,16 @@
-Implemented the routine.
-It calculates the motion vectors based on the block size and the search window.
+# Image_Quantization2
 
-The input is reference image, target image, block size and search window.
+## Features
 
-The output is a mv.txt file which contains motion vectors for all the blocks.
+* It calculates the motion vectors based on the block size and the search window.
+
+## Input
+
+* Reference Image
+* Target Image
+* Block Size
+* Search Window
+
+## Output
+
+* mv.txt file-contains motion vectors for all the blocks
